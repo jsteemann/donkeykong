@@ -34,6 +34,18 @@ process_directory () {
 }
 
 process_directory "Person" "document" "--datatype LocationCityId=string" "--translate id=_key"
-process_directory "Tag" "document" "--datatype=TagShit=string" "--translate=id=_key"
-process_directory "Comment" "document" "--datatype=CommentShit=string" "--translate=id=_key"
-process_directory "Edgy" "edge" "--from-collection-prefix=Person" "--to-collection-prefix=Comment" "--translate=Person=_from" "--translate=Comment=_to" "--translate=id=_key"
+process_directory "Comment" "document" "--datatype CreatorPersonId=string" "--datatype LocationCountryId=string" 
+"--datatype ParentPostId=string" "--datatype ParentCommmentId=string" "--translate id=_key"
+process_directory "Forum" "document" "--datatype ModeratorPersonId=string" "--translate id=_key"
+process_directory "Post" "document" "--datatype CreatorPersonId=string" "--datatype ContainerForumId=string" "--dataType LocationForumId=string" "--translate id=_key"
+process_directory "Comment_hasTag_Tag" "edge" "--from-collection-prefix=Comment" "--to-collection-prefix=Tag" "--translate CommentId=_from" "--translate TagId=_to" 
+process_directory "Forum_hasMember_Person" "edge" "--from-collection-prefix=Forum" "--to-collection-prefix=Person" "--translate ForumId=_from" "--translate PersonId=_to" 
+process_directory "Forum_hasTag_Tag" "edge" "--from-collection-prefix=Forum" "--to-collection-prefix=Tag" "--translate ForumId=_from" "--translate TagId=_to" 
+process_directory "Person_hasInterest_Tag" "edge" "--from-collection-prefix=Person" "--to-collection-prefix=Tag" "--translate PersonId=_from" "--translate TagId=_to" 
+process_directory "Person_knows_Person" "edge" "--from-collection-prefix=Person" "--to-collection-prefix=Person" "--translate Person1Id=_from" "--translate Person2Id=_to" 
+process_directory "Person_likes_Comment" "edge" "--from-collection-prefix=Person" "--to-collection-prefix=Comment" "--translate PersonId=_from" "--translate CommentId=_to" 
+process_directory "Person_likes_Post" "edge" "--from-collection-prefix=Person" "--to-collection-prefix=Post" "--translate PersonId=_from" "--translate PostId=_to" 
+process_directory "Person_studyAt_University" "edge" "--from-collection-prefix=Person" "--to-collection-prefix=University" "--translate PersonId=_from" "--translate UniversityId=_to" 
+process_directory "Person_workAt_Company" "edge" "--from-collection-prefix=Person" "--to-collection-prefix=Company" "--translate PersonId=_from" "--translate CompanyId=_to" 
+process_directory "Post_hastTag_Tag" "edge" "--from-collection-prefix=Post" "--to-collection-prefix=Tag" "--translate PostId=_from" "--translate TagId=_to" 
+
