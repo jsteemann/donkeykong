@@ -3,14 +3,16 @@ ARANGOSH="${ARANGOSH:-build/bin/arangosh}"
 ENDPOINT="${ENDPOINT:-tcp://127.0.0.1:8529}"
 USERNAME="${USERNAME:-root}"
 PASSWORD="${PASSWORD:-}"
+REPLICATION_FACTOR="${REPLICATION_FACTOR:-1}"
+NUMBER_OF_SHARDS="${NUMBER_OF_SHARDS:-3}"
 
 run_import () {
   local collection="$1"
   local file="$2"
   local type="$3"
   shift 3
-  echo $ARANGOIMPORT -type csv --collection "$collection" --separator "|" --create-collection true --create-collection-type "$type" --file "$file" --server.endpoint "$endpoint" --server.username "$username" --server.password "$password" "$@"
-  $ARANGOIMPORT --type csv --collection "$collection" --separator "|" --create-collection true --create-collection-type "$type" --file "$file" --server.endpoint "$ENDPOINT" --server.username "$USERNAME" --server.password "$PASSWORD" "$@"
+  echo $ARANGOIMPORT -type csv --collection "$collection" --separator "|" --create-collection true --create-collection-type "$type" --file "$file" --server.endpoint "$endpoint" --server.username "$username" --server.password "$password" --replication-factor "$REPLICATION_FACTOR" --number-of-shards "$NUMBER_OF_SHARDS" "$@"
+  $ARANGOIMPORT --type csv --collection "$collection" --separator "|" --create-collection true --create-collection-type "$type" --file "$file" --server.endpoint "$ENDPOINT" --server.username "$USERNAME" --server.password "$PASSWORD" --replication-factor "$REPLICATION_FACTOR" --number-of-shards "$NUMBER_OF_SHARDS" "$@"
   import_result=$?
 }
 
