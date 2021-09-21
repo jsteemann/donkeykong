@@ -1,18 +1,19 @@
 ARANGOIMPORT="${ARANGOIMPORT:-build/bin/arangoimport}"
 ARANGOSH="${ARANGOSH:-build/bin/arangosh}"
-ENDPOINT="${ENDPOINT:-tcp://127.0.0.1:8529}"
-USERNAME="${USERNAME:-root}"
-PASSWORD="${PASSWORD:-}"
+ARANGO_ENDPOINT="${ARANGO_ENDPOINT:-tcp://127.0.0.1:8529}"
+ARANGO_USERNAME="${ARANGO_USERNAME:-root}"
+ARANGO_PASSWORD="${ARANGO_PASSWORD:-}"
 REPLICATION_FACTOR="${REPLICATION_FACTOR:-1}"
 NUMBER_OF_SHARDS="${NUMBER_OF_SHARDS:-3}"
+DATADIR="${DATADIR:-.}"
+JAVASCRIPT_DIRECTORY="${JAVASCRIPT_DIRECTORY:-js}";
 
 run_import () {
   local collection="$1"
   local file="$2"
   local type="$3"
   shift 3
-  echo $ARANGOIMPORT -type csv --collection "$collection" --separator "|" --create-collection true --create-collection-type "$type" --file "$file" --server.endpoint "$endpoint" --server.username "$username" --server.password "$password" --replication-factor "$REPLICATION_FACTOR" --number-of-shards "$NUMBER_OF_SHARDS" "$@"
-  $ARANGOIMPORT --type csv --collection "$collection" --separator "|" --create-collection true --create-collection-type "$type" --file "$file" --server.endpoint "$ENDPOINT" --server.username "$USERNAME" --server.password "$PASSWORD" --replication-factor "$REPLICATION_FACTOR" --number-of-shards "$NUMBER_OF_SHARDS" "$@"
+  $ARANGOIMPORT --type csv --collection "$collection" --separator "|" --create-collection true --create-collection-type "$type" --file "$file" --server.endpoint "$ARANGO_ENDPOINT" --server.username "$ARANGO_USERNAME" --server.password "$ARANGO_PASSWORD" "$@"
   import_result=$?
 }
 
@@ -22,10 +23,20 @@ process_directory () {
   shift 2
   
   # clean up collection beforehand
-  echo "db._drop('$collection');" | $ARANGOSH $AUTH
+  echo "db._drop('$collection');" | $ARANGOSH --server.endpoint "$ARANGO_ENDPOINT" --server.username "$ARANGO_USERNAME" --server.password "$ARANGO_PASSWORD" --javascript.startup-directory "$JAVASCRIPT_DIRECTORY"
+  import_result="$?"
+  if [[ "x$import_result" != "x0" ]]; then
+    exit "$import_result"
+  fi
+
+  echo "db._create('$collection', {numberOfShards: $NUMBER_OF_SHARDS, replicationFactor: $REPLICATION_FACTOR});" | $ARANGOSH --server.endpoint "$ARANGO_ENDPOINT" --server.username "$ARANGO_USERNAME" --server.password "$ARANGO_PASSWORD" --javascript.startup-directory "$JAVASCRIPT_DIRECTORY"
+  import_result="$?"
+  if [[ "x$import_result" != "x0" ]]; then
+    exit "$import_result"
+  fi
   
   # import all csv files for collection
-  for file in `find "$collection" -type f -name "*.csv"`; do
+  for file in `find "$DATADIR/$collection" -type f -name "*.csv"`; do
     run_import "$collection" "$file" "$type" $@
     if [[ "x$import_result" != "x0" ]]; then
       exit "$import_result"
