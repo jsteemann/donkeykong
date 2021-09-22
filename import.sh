@@ -22,27 +22,42 @@ process_directory () {
   local type="$2"
   shift 2
   
-  # clean up collection beforehand
-  echo "db._drop('$collection');" | $ARANGOSH --server.endpoint "$ARANGO_ENDPOINT" --server.username "$ARANGO_USERNAME" --server.password "$ARANGO_PASSWORD" --javascript.startup-directory "$JAVASCRIPT_DIRECTORY"
-  import_result="$?"
-  if [[ "x$import_result" != "x0" ]]; then
-    exit "$import_result"
-  fi
-
-  echo "db._create('$collection', {numberOfShards: $NUMBER_OF_SHARDS, replicationFactor: $REPLICATION_FACTOR});" | $ARANGOSH --server.endpoint "$ARANGO_ENDPOINT" --server.username "$ARANGO_USERNAME" --server.password "$ARANGO_PASSWORD" --javascript.startup-directory "$JAVASCRIPT_DIRECTORY"
+  # clean up collection and recreate it
+  echo "db._drop('$collection'); db._create('$collection', {numberOfShards: $NUMBER_OF_SHARDS, replicationFactor: $REPLICATION_FACTOR});" | $ARANGOSH --server.endpoint "$ARANGO_ENDPOINT" --server.username "$ARANGO_USERNAME" --server.password "$ARANGO_PASSWORD" --javascript.startup-directory "$JAVASCRIPT_DIRECTORY" --quiet true
   import_result="$?"
   if [[ "x$import_result" != "x0" ]]; then
     exit "$import_result"
   fi
   
   # import all csv files for collection
-  for file in `find "$DATADIR/$collection" -type f -name "*.csv"`; do
+  for file in `find "$DATADIR"/*/"$collection" -type f -name "*.csv"`; do
     run_import "$collection" "$file" "$type" $@
     if [[ "x$import_result" != "x0" ]]; then
       exit "$import_result"
     fi
   done
 }
+
+# sanity checks
+if [[ ! -f "$ARANGOSH" ]]; then
+  echo "unable to find arangosh in $ARANGOSH"
+  exit 1
+fi
+if [[ ! -f "$ARANGOIMPORT" ]]; then
+  echo "unable to find arangoimport in $ARANGOIMPORT"
+  exit 1
+fi
+
+if [[ ! -d "$DATADIR" ]]; then
+  echo "unable to find data directory $DATADIR"
+  exit 1
+fi
+for sub in static dynamic; do
+  if [[ ! -d "$DATADIR/$sub" ]]; then
+    echo "unable to find '$sub' subdirectory in data directory $DATADIR"
+    exit 1
+  fi
+done
 
 process_directory "Person" "document" "--datatype LocationCityId=string" "--translate id=_key"
 process_directory "Comment" "document" "--datatype CreatorPersonId=string" "--datatype LocationCountryId=string" "--datatype ParentPostId=string" "--datatype ParentCommmentId=string" "--translate id=_key"
@@ -57,5 +72,5 @@ process_directory "Person_likes_Comment" "edge" "--from-collection-prefix=Person
 process_directory "Person_likes_Post" "edge" "--from-collection-prefix=Person" "--to-collection-prefix=Post" "--translate PersonId=_from" "--translate PostId=_to" 
 process_directory "Person_studyAt_University" "edge" "--from-collection-prefix=Person" "--to-collection-prefix=University" "--translate PersonId=_from" "--translate UniversityId=_to" 
 process_directory "Person_workAt_Company" "edge" "--from-collection-prefix=Person" "--to-collection-prefix=Company" "--translate PersonId=_from" "--translate CompanyId=_to" 
-process_directory "Post_hastTag_Tag" "edge" "--from-collection-prefix=Post" "--to-collection-prefix=Tag" "--translate PostId=_from" "--translate TagId=_to" 
+process_directory "Post_hasTag_Tag" "edge" "--from-collection-prefix=Post" "--to-collection-prefix=Tag" "--translate PostId=_from" "--translate TagId=_to" 
 
