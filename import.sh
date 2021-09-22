@@ -73,4 +73,8 @@ process_directory "Person_likes_Post" "edge" "--from-collection-prefix=Person" "
 process_directory "Person_studyAt_University" "edge" "--from-collection-prefix=Person" "--to-collection-prefix=University" "--translate PersonId=_from" "--translate UniversityId=_to" 
 process_directory "Person_workAt_Company" "edge" "--from-collection-prefix=Person" "--to-collection-prefix=Company" "--translate PersonId=_from" "--translate CompanyId=_to" 
 process_directory "Post_hasTag_Tag" "edge" "--from-collection-prefix=Post" "--to-collection-prefix=Tag" "--translate PostId=_from" "--translate TagId=_to" 
+process_directory "Organisation" "document" "--datatype LocationPlaceId=string" "--translate id=_key"
+process_directory "Place" "document" "--datatype PartOfPlaceId=string" "--translate id=_key"
+process_directory "Tag" "document" "--datatype TypeTagClassId=string" "--translate id=_key"
+process_directory "TagClass" "document" "--datatype SubclassOfTagClassId=string" "--translate id=_key"
 
