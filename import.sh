@@ -13,7 +13,7 @@ run_import () {
   local file="$2"
   local type="$3"
   shift 3
-  $ARANGOIMPORT --type csv --collection "$collection" --separator "|" --create-collection true --create-collection-type "$type" --file "$file" --server.endpoint "$ARANGO_ENDPOINT" --server.username "$ARANGO_USERNAME" --server.password "$ARANGO_PASSWORD" "$@"
+  $ARANGOIMPORT --type csv --collection "$collection" --create-collection-type "$type" --separator "|" --create-collection true --file "$file" --server.endpoint "$ARANGO_ENDPOINT" --server.username "$ARANGO_USERNAME" --server.password "$ARANGO_PASSWORD" "$@"
   import_result=$?
 }
 
@@ -23,7 +23,7 @@ process_directory () {
   shift 2
   
   # clean up collection and recreate it
-  echo "db._drop('$collection'); db._create('$collection', {numberOfShards: $NUMBER_OF_SHARDS, replicationFactor: $REPLICATION_FACTOR});" | $ARANGOSH --server.endpoint "$ARANGO_ENDPOINT" --server.username "$ARANGO_USERNAME" --server.password "$ARANGO_PASSWORD" --javascript.startup-directory "$JAVASCRIPT_DIRECTORY" --quiet true
+  echo "db._drop('$collection'); db._create('$collection', {numberOfShards: $NUMBER_OF_SHARDS, replicationFactor: $REPLICATION_FACTOR}, '$type');" | $ARANGOSH --server.endpoint "$ARANGO_ENDPOINT" --server.username "$ARANGO_USERNAME" --server.password "$ARANGO_PASSWORD" --javascript.startup-directory "$JAVASCRIPT_DIRECTORY" --quiet true
   import_result="$?"
   if [[ "x$import_result" != "x0" ]]; then
     exit "$import_result"
