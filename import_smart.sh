@@ -3,6 +3,7 @@ ARANGOSH="${ARANGOSH:-build/bin/arangosh}"
 ARANGO_ENDPOINT="${ARANGO_ENDPOINT:-tcp://127.0.0.1:8529}"
 ARANGO_USERNAME="${ARANGO_USERNAME:-root}"
 ARANGO_PASSWORD="${ARANGO_PASSWORD:-}"
+ARANGO_DATABASE="${ARANGO_DATABASE:-SF10_benchmark}"
 REPLICATION_FACTOR="${REPLICATION_FACTOR:-1}"
 NUMBER_OF_SHARDS="${NUMBER_OF_SHARDS:-3}"
 DATADIR="${DATADIR:-.}"
@@ -42,7 +43,7 @@ create_smart_graph () {
   db._create("isSubclassOf", {"replicationFactor": "satellite"}, "edge")
     
   '
-  echo "$jsScriptCode" | $ARANGOSH --server.endpoint "$ARANGO_ENDPOINT" --server.username "$ARANGO_USERNAME" --server.password "$ARANGO_PASSWORD" --javascript.startup-directory "$JAVASCRIPT_DIRECTORY"
+  echo "$jsScriptCode" | $ARANGOSH --server.endpoint "$ARANGO_ENDPOINT" --server.database "$ARANGO_DATABASE" --server.username "$ARANGO_USERNAME" --server.password "$ARANGO_PASSWORD" --javascript.startup-directory "$JAVASCRIPT_DIRECTORY"
 }
 
 run_import () {
@@ -50,7 +51,7 @@ run_import () {
   local file="$2"
   local type="$3"
   shift 3
-  $ARANGOIMPORT --type csv --collection "$collection" --separator "|" --create-collection true --create-collection-type "$type" --file "$file" --server.endpoint "$ARANGO_ENDPOINT" --server.username "$ARANGO_USERNAME" --server.password "$ARANGO_PASSWORD" "$@" --overwrite true
+  $ARANGOIMPORT --type csv --collection "$collection" --separator "|" --create-collection true --create-collection-type "$type" --file "$file" --server.endpoint "$ARANGO_ENDPOINT" --server.database "$ARANGO_DATABASE" --server.username "$ARANGO_USERNAME" --server.password "$ARANGO_PASSWORD" "$@" --overwrite true
   import_result=$?
 }
 
@@ -61,13 +62,13 @@ process_directory () {
   shift 3
   
   # uncomment to clean up collection beforehand
-  # echo "db._drop('$collection');" | $ARANGOSH --server.endpoint "$ARANGO_ENDPOINT" --server.username "$ARANGO_USERNAME" --server.password "$ARANGO_PASSWORD" --javascript.startup-directory "$JAVASCRIPT_DIRECTORY"
+  # echo "db._drop('$collection');" | $ARANGOSH --server.endpoint "$ARANGO_ENDPOINT" --server.database "$ARANGO_DATABASE" --server.username "$ARANGO_USERNAME" --server.password "$ARANGO_PASSWORD" --javascript.startup-directory "$JAVASCRIPT_DIRECTORY"
   # import_result="$?"
   # if [[ "x$import_result" != "x0" ]]; then
   #   exit "$import_result"
   # fi
 
-  # echo "db._create('$collection', {numberOfShards: $NUMBER_OF_SHARDS, replicationFactor: $REPLICATION_FACTOR}, '$type');" | $ARANGOSH --server.endpoint "$ARANGO_ENDPOINT" --server.username "$ARANGO_USERNAME" --server.password "$ARANGO_PASSWORD" --javascript.startup-directory "$JAVASCRIPT_DIRECTORY"
+  # echo "db._create('$collection', {numberOfShards: $NUMBER_OF_SHARDS, replicationFactor: $REPLICATION_FACTOR}, '$type');" | $ARANGOSH --server.endpoint "$ARANGO_ENDPOINT" --server.database "$ARANGO_DATABASE" --server.username "$ARANGO_USERNAME" --server.password "$ARANGO_PASSWORD" --javascript.startup-directory "$JAVASCRIPT_DIRECTORY"
   # import_result="$?"
   # if [[ "x$import_result" != "x0" ]]; then
   #   exit "$import_result"
