@@ -111,7 +111,7 @@ process_directory "dynamic/Person_likes_Post" "Person_likes_Post_standard" "edge
 process_directory "dynamic/Person_studyAt_University" "Person_studyAt_University" "edge" "--from-collection-prefix=Person" "--to-collection-prefix=Organisation" "--datatype UniversityId=string" "--merge-attributes _from=[PersonId]:[PersonId]" "--merge-attributes _to=[UniversityId]"
 process_directory "dynamic/Person_workAt_Company" "Person_workAt_Company" "edge" "--from-collection-prefix=Person" "--to-collection-prefix=Organisation" "--merge-attributes _from=[PersonId]:[PersonId]" "--merge-attributes _to=[CompanyId]"
 process_directory "static/Place" "Place" "document" "--merge-attributes _key=[id]"
-process_directory "dynamic/Post" "Post" "document" "--datatype CreatorPersonId=string" "--datatype ContainerForumId=string" "--dataType LocationForumId=string" "--merge-attributes _key=[CreatorPersonId]:[id]"
+process_directory "dynamic/Post" "Post" "document" "--datatype CreatorPersonId=string" "--datatype ContainerForumId=string" "--datatype LocationForumId=string" "--merge-attributes _key=[CreatorPersonId]:[id]"
 #Post_hasReply_Comment defined in create_smart_graph and requires post processing to obtain smartified person who replied and smartified commentId
 #Post_hasTag_Tag requires post processing for the smartified postId
 process_directory "dynamic/Post_hasTag_Tag" "Post_hastTag_Tag_standard" "edge" "--from-collection-prefix=Post" "--to-collection-prefix=Tag" "--merge-attributes _from=[PostId]" "--merge-attributes _to=[TagId]"
