@@ -24,7 +24,8 @@ create_smart_graph () {
   ldbc._addVertexCollection("Comment");  
   var rel = graph_module._relation("Comment_hasReply_Comment", ["Comment"], ["Comment"]);
   ldbc._extendEdgeDefinitions(rel);
-  db._create("Comment_hasTag_Tag", {"replicationFactor": 3, "distributeShardsLike": "Person"} );
+  var rel = graph_module._relation("Comment_hasTag_Tag", ["Comment"], ["Tag"]);
+  ldbc._extendEdgeDefinitions(rel);
   var rel = graph_module._relation("Person_hasCreated_Comment", ["Comment"], ["Person"]);
   ldbc._extendEdgeDefinitions(rel);
   var rel = graph_module._relation("Person_hasCreated_Post", ["Post"], ["Person"]); 
@@ -40,7 +41,9 @@ create_smart_graph () {
   db._create("Post_hasTag_Tag", {"replicationFactor": 3, "distributeShardsLike": "Person"}, "edge" );
   db._create("Tag", {"replicationFactor": "satellite"})
   db._create("TagClass", {"replicationFactor": "satellite"})
+  db._create("Organisation", {"replicationFactor": "satellite"})
   db._create("isSubclassOf", {"replicationFactor": "satellite"}, "edge")
+  db._create("Person_workAt_Company", {"replicationFactor": "satellite"}, "edge")
     
   '
   echo "$jsScriptCode" | $ARANGOSH --server.endpoint "$ARANGO_ENDPOINT" --server.database "$ARANGO_DATABASE" --server.username "$ARANGO_USERNAME" --server.password "$ARANGO_PASSWORD" --javascript.startup-directory "$JAVASCRIPT_DIRECTORY"
