@@ -94,7 +94,7 @@ process_directory "dynamic/Comment" "Comment" "document" "--datatype CreatorPers
 #Comment_hasTag_Tag_standard is imported below but needs the comment field smartified post import
 process_directory "dynamic/Comment_hasTag_Tag" "Comment_hasTag_Tag_standard" "edge" "--from-collection-prefix=Comment" "--to-collection-prefix=Tag" "--merge-attributes _from=[CommentId]" "--merge-attributes _to=[TagId]" 
 # ModeratorPersonId could be 'smartified' in Forum but not necessary for queries
-process_directory "dynamic/Forum" "Forum" "document" "--datatype ModeratorPersonId=string" "--merge-attributes _key=[ModeratorPersonId:id]" "--merge-attributes id=[id]" "--merge-attributes CreatorPersonId=[ModeratorPersonId]"
+process_directory "dynamic/Forum" "Forum" "document" "--datatype ModeratorPersonId=string" "--merge-attributes _key=[ModeratorPersonId]:[id]" "--merge-attributes CreatorPersonId=[ModeratorPersonId]"
 
 process_directory "dynamic/Forum_hasMember_Person" "Forum_hasMember_Person" "edge" "--from-collection-prefix=Forum" "--to-collection-prefix=Person" "--merge-attributes _from=[ForumId]" "--merge-attributes _to=[PersonId]:[PersonId]" 
 # Skipping Forum_hasPost_Post as it isn't being used in query
