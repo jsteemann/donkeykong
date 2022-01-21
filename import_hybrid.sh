@@ -111,7 +111,7 @@ process_directory "dynamic/Post" "Post" "document" "--datatype CreatorPersonId=s
 #Post_hasReply_Comment defined in create_smart_graph and requires post processing to obtain smartified person who replied and smartified commentId
 #Post_hasTag_Tag requires post processing for the smartified postId
 process_directory "dynamic/Post_hasTag_Tag" "Post_hastTag_Tag_standard" "edge" "--from-collection-prefix=Post" "--to-collection-prefix=Tag" "--merge-attributes _from=[PostId]" "--merge-attributes _to=[TagId]:[TagId]"
-process_directory "static/Tag" "Tag" "document" "--datatype id=string" "--merge-attributes _key=[id]:[id]"
+process_directory "static/Tag" "Tag" "document" "--datatype id=string" "--merge-attributes CreatorPersonId=[id]" "--merge-attributes _key=[CreatorPersonId]:[id]"
 
 process_directory "static/TagClass" "TagClass" "document" "--datatype id=string" "--merge-attributes _key=[id]:[id]" "--datatype SubclassOfTagClassId=string"
 process_directory "static/TagClass" "isSubclassOf" "edge" "--from-collection-prefix=TagClass" "--to-collection-prefix=TagClass" "--datatype id=string" "--datatype SubclassOfTagClassId=string" "--merge-attributes _from=[id]:[id]" "--merge-attributes _to=[SubclassOfTagClassId]:[SubclassofTagClassId]" "--remove-attribute name" "--remove-attribute url"
