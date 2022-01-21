@@ -117,10 +117,10 @@ process_directory "static/Place" "Place" "document" "--merge-attributes _key=[id
 process_directory "dynamic/Post" "Post" "document" "--datatype CreatorPersonId=string" "--datatype ContainerForumId=string" "--datatype LocationForumId=string" "--merge-attributes _key=[CreatorPersonId]:[id]"
 #Post_hasReply_Comment defined in create_smart_graph and requires post processing to obtain smartified person who replied and smartified commentId
 #Post_hasTag_Tag requires post processing for the smartified postId
-process_directory "dynamic/Post_hasTag_Tag" "Post_hastTag_Tag_standard" "edge" "--from-collection-prefix=Post" "--to-collection-prefix=Tag" "--merge-attributes _from=[PostId]" "--merge-attributes _to=[TagId]"
-process_directory "static/Tag" "Tag" "document" "--datatype id=string" "--merge-attributes _key=[id]"
+process_directory "dynamic/Post_hasTag_Tag" "Post_hastTag_Tag_standard" "edge" "--from-collection-prefix=Post" "--to-collection-prefix=Tag" "--merge-attributes _from=[PostId]" "--merge-attributes _to=[TagId]:[TagId]"
+process_directory "static/Tag" "Tag" "document" "--datatype id=string" "--merge-attributes _key=[id]:[id]"
 
 process_directory "static/TagClass" "TagClass" "document" "--datatype id=string" "--merge-attributes _key=[id]" "--datatype SubclassOfTagClassId=string"
 process_directory "dynamic/Post" "Forum_containerOf_Post" "edge" "--datatype ContainerForumId=string" "--datatype id=string" "--datatype CreatorPersonId=string" "--from-collection-prefix=Forum" "--to-collection-prefix=Post" "--translate ContainerForumId=_from" "--merge-attributes _to=[CreatorPersonId]:[id]" "--remove-attribute browserUsed" "--remove-attribute content" "--remove-attribute creationDate" "--remove-attribute deletionDate" "--remove-attribute locationIP" "--remove-attribute length" "--remove-attribute language" "--remove-attribute explicitlyDeleted" "--remove-attribute LocationCountryId"
-process_directory "dynamic/Person_hasInterest_Tag" "Person_hasInterest_Tag" "edge" "--datatype PersonId=string" "--datatype TagId=string" "--from-collection-prefix=Person" "--to-collection-prefix=Tag" "--merge-attributes _from=[PersonId]:[PersonId]" "--translate TagId=_to"
+process_directory "dynamic/Person_hasInterest_Tag" "Person_hasInterest_Tag" "edge" "--datatype personId=string" "--datatype TagId=string" "--from-collection-prefix=Person" "--to-collection-prefix=Tag" "--merge-attributes _from=[personId]:[personId]" "--translate interestId=_to"
 
